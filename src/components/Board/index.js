@@ -21,6 +21,11 @@ function Board(props) {
     null,
   ]);
 
+  const [winner, setWinner] = useState('');
+
+  const [scoreX, setScoreX] = useState(0);
+  const [scoreO, setScoreO] = useState(0);
+
   const changeBoardSquare = (index, newValue) => {
     const newBoard = [...board];
     newBoard[index] = newValue;
@@ -46,8 +51,7 @@ function Board(props) {
         board[element[1]] === board[element[2]] &&
         board[element[0]] !== null
       ) {
-        console.log('game over! winner is ' + board[element[0]]);
-        return;
+        setWinner(board[element[0]]);
       }
     });
     const freeSquareId = board.findIndex((el) => el === null);
@@ -56,10 +60,19 @@ function Board(props) {
     }
   };
 
+  useEffect(() => {
+    if (winner === 'X') {
+      setScoreX(scoreX + 1);
+    } else if (winner === 'O') {
+      setScoreO(scoreO + 1);
+    }
+  }, [winner]);
+
   useEffect(checkGameStatus, [checkGameStatus]);
 
   return (
     <div className="board">
+      {winner != '' && <h1>Game Over! Winner is {winner}</h1>}
       {board.map((el, index) => {
         return (
           <Square
@@ -71,12 +84,26 @@ function Board(props) {
           />
         );
       })}
+      <h2>
+        Team X = {scoreX}, Team O = {scoreO}
+      </h2>
       <button
         onClick={() => {
           setBoard([null, null, null, null, null, null, null, null, null]);
+          setWinner('');
         }}
       >
-        Reset
+        Next Round
+      </button>
+      <button
+        onClick={() => {
+          setBoard([null, null, null, null, null, null, null, null, null]);
+          setWinner('');
+          setScoreX(0);
+          setScoreO(0);
+        }}
+      >
+        Reset Game
       </button>
     </div>
   );
